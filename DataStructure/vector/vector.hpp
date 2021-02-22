@@ -5,33 +5,32 @@
 
 #include <climits>
 #include <cstddef>
+#include <iostream>
 
-#define INIT_LEN 10
+#define INIT_LEN 5
 
 namespace sjtu {
     template<typename T>
     class vector {
     private:
-        T *store;
+        T **store = nullptr;
         size_t tail;
         size_t length;
         
         void double_space() {
             length *= 2;
-            T *temp = (T *) ::operator new(sizeof(T) * length);
-            for (int i = 0; i < tail; i++) memcpy(temp + i, store + i, sizeof(T));
-            for (T *p = store; p != store + tail; p++) p->~T();
-            operator delete(store);
+            T **temp = new T *[length];
+            for (int i = 0; i < tail; i++)temp[i] = store[i];
+            delete[]store;
             store = temp;
         }
         
         void halve_space() {
             if (length > INIT_LEN) {
                 length = (length / 2 < INIT_LEN ? INIT_LEN : length / 2);
-                T *temp = (T *) ::operator new(sizeof(T) * length);
-                for (int i = 0; i < tail; i++) memcpy(temp + i, store + i, sizeof(T));
-                for (T *p = store; p != store + tail; p++)p->~T();
-                operator delete(store);
+                T **temp = new T *[length];
+                for (int i = 0; i < tail; i++)temp[i] = store[i];
+                delete[]store;
                 store = temp;
             }
         }
@@ -45,6 +44,7 @@ namespace sjtu {
         private:
             vector<T> *vec;
             int pos;
+        
         public:
             iterator(vector<T> *v, int p) : vec(v), pos(p) {}
             
@@ -108,7 +108,7 @@ namespace sjtu {
             }
             
             T &operator*() const {
-                return vec->store[pos];
+                return *(vec->store[pos]);
             }
             
             bool operator==(const iterator &rhs) const {
@@ -199,7 +199,7 @@ namespace sjtu {
             }
             
             T &operator*() const {
-                return vec->store[pos];
+                return *(vec->store[pos]);
             }
             
             bool operator==(const iterator &rhs) const {
@@ -222,58 +222,58 @@ namespace sjtu {
         };
         
         vector() : length(INIT_LEN), tail(0) {
-            store = (T *) ::operator new(sizeof(T) * length);
+            store = new T *[length];
         }
         
         vector(const vector &other) : length(other.length), tail(other.tail) {
-            store = (T *) ::operator new(sizeof(T) * length);
-            for (int i = 0; i < tail; i++)memcpy(store + i, other.store + i, sizeof(T));
+            store = new T *[length];
+            for (int i = 0; i < tail; i++)store[i] = new T(*(other.store[i]));
         }
         
         ~vector() {
-            for (T *p = store; p != store + tail; p++) p->~T();
-            operator delete(store);
+            for (int i = 0; i < tail; i++)delete store[i];
+            delete[]store;
         }
         
         vector &operator=(const vector &other) {
             if (this == &other)return *this;
-            for (T *p = store; p != store + tail; p++) p->~T();
-            operator delete(store);
+            for (int i = 0; i < tail; i++)delete store[i];
+            delete[]store;
             length = other.length;
             tail = other.tail;
-            store = (T *) ::operator new(sizeof(T) * length);
-            for (int i = 0; i < tail; i++) memcpy(store + i, other.store + i, sizeof(T));
+            store = new T *[length];
+            for (int i = 0; i < tail; i++)store[i] = new T(*(other.store[i]));
             return *this;
         }
         
         T &at(const size_t &pos) {
             if (pos < 0 || pos >= length)throw index_out_of_bound();
-            return store[pos];
+            return *(store[pos]);
         }
         
         const T &at(const size_t &pos) const {
             if (pos < 0 || pos >= length)throw index_out_of_bound();
-            return store[pos];
+            return *(store[pos]);
         }
         
         T &operator[](const size_t &pos) {
             if (pos < 0 || pos >= tail)throw index_out_of_bound();
-            return store[pos];
+            return *(store[pos]);
         }
         
         const T &operator[](const size_t &pos) const {
             if (pos < 0 || pos >= tail)throw index_out_of_bound();
-            return store[pos];
+            return *(store[pos]);
         }
         
         const T &front() const {
             if (tail == 0)throw container_is_empty();
-            return store[0];
+            return *(store[0]);
         }
         
         const T &back() const {
             if (tail == 0)throw container_is_empty();
-            return store[tail - 1];
+            return *(store[tail - 1]);
         }
         
         iterator begin() {
@@ -306,63 +306,59 @@ namespace sjtu {
         }
         
         void clear() {
-            for (T *p = store; p != store + tail; p++) p->~T();
-            operator delete(store);
+            for (int i = 0; i < tail; i++)delete store[i];
+            delete[]store;
             tail = 0;
             length = INIT_LEN;
-            store == (T *) ::operator new(sizeof(T) * length);
+            store == new T *[length];
         }
         
         iterator insert(iterator pos, const T &value) {
-            if (tail == length) double_space();
-            for (int i = tail - 1; i >= pos.pos; i--)memcpy(store + 1 + i, store + i, sizeof(T));
+            if (tail == length)double_space();
+            for (int i = tail - 1; i >= pos.pos; i--)store[i + 1] = store[i];
             tail++;
-            (store + pos.pos)->~T();
-            new(store + pos.pos) T(value);
+            *(store + pos.pos) = new T(value);
             pos++;
             return pos;
         }
         
         iterator insert(const size_t &ind, const T &value) {
             if (ind < 0 || ind > tail)throw index_out_of_bound();
-            if (tail == length) double_space();
-            for (int i = tail - 1; i >= ind; i--)memcpy(store + 1 + i, store + i, sizeof(T));
+            if (tail == length)double_space();
+            for (int i = tail - 1; i >= ind; i--)store[i + 1] = store[i];
             tail++;
-            (store + ind)->~T();
-            new(store + ind) T(value);
+            *(store + ind) = new T(value);
             return iterator(this, ind + 1);
         }
         
         iterator erase(iterator pos) {
-            for (int i = pos.pos; i < tail - 1; i++) memcpy(store + i, store + 1 + i, sizeof(T));
+            delete (*(store + pos.pos));
+            for (int i = pos.pos; i < tail - 1; i++)store[i] = store[i + 1];
             tail--;
-            (store + tail)->~T();
             return pos;
         }
         
         iterator erase(const size_t &ind) {
-            for (int i = ind; i < tail - 1; i++)memcpy(store + i, store + 1 + i, sizeof(T));
+            delete (*(store + ind));
+            for (int i = ind; i < tail - 1; i++)store[i] = store[i + 1];
             tail--;
-            (store + tail)->~T();
             if ((tail < (length / 2)))halve_space();
             return iterator(this, ind);
         }
         
         void push_back(const T &value) {
-            if (tail == length) double_space();
-            new(store + tail) T(value);
+            if (tail == length)double_space();
+            *(store + tail) = new T(value);
             tail++;
         }
         
         void pop_back() {
             if (tail == 0)throw container_is_empty();
             tail--;
-            (store + tail)->~T();
+            delete (*(store + tail));
             if (tail < (length / 2))halve_space();
         }
     };
-    
-    
 }
 
 #endif
