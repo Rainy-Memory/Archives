@@ -16,7 +16,6 @@
 using std::cerr;
 using std::cout;
 using std::endl;
-using std::vector;
 using std::upper_bound;
 using std::lower_bound;
 
