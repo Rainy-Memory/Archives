@@ -14,8 +14,7 @@ using std::istream;
 using std::ostream;
 using std::endl;
 
-class DevidedByZero {
-};
+class DevidedByZero {};
 
 class ArbitraryPrecisionInt {
 
