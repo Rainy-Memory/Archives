@@ -3,4 +3,4 @@ project(Archives)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Archives main.cpp Mix/Date.hpp DataStructure/BPLusTree/BPlusTree_RepeatedKeyVersion.h DataStructure/Stack/Stack.h DataStructure/Stack/MonotoneStack.h DataStructure/LinkedList/LinkedList.h DataStructure/LinkedList/DoublyLinkedList.h Mix/TokenScanner.h DataStructure/BinaryIndexTree.h Mix/HashType.h Mix/algorithm.h)
+add_executable(Archives main.cpp Mix/Date.hpp DataStructure/BPLusTree/BPlusTree_RepeatedKeyVersion.h DataStructure/Stack/Stack.h DataStructure/Stack/MonotoneStack.h DataStructure/LinkedList/LinkedList.h DataStructure/LinkedList/DoublyLinkedList.h Mix/TokenScanner.h DataStructure/BinaryIndexTree.h Mix/HashType.h Mix/algorithm.h DataStructure/SegmentTree.h)
