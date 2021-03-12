@@ -1,9 +1,9 @@
 //
-// Created by Rainy Memory on 2021/3/1.
+// Created by Rainy Memory on 2021/3/12.
 //
 
-#ifndef ARCHIVES_DOUBLYLINKEDLIST_H
-#define ARCHIVES_DOUBLYLINKEDLIST_H
+#ifndef ARCHIVES_QUEUE_H
+#define ARCHIVES_QUEUE_H
 
 template<class T>
 class DoublyLinkedList {
@@ -108,6 +108,41 @@ public:
         delete eraseNode;
         len--;
     }
+    
+    bool empty() const {
+        return len == 0;
+    }
+    
+    T &at(int index) {
+        return findNode(index)->value;
+    }
+    
+    const T &at(int index) const {
+        return findNode(index)->value;
+    }
 };
 
-#endif //ARCHIVES_DOUBLYLINKEDLIST_H
+template<class T>
+class Queue {
+private:
+    DoublyLinkedList<T> store;
+
+public:
+    void push(const T &o) {
+        store.push_back(o);
+    }
+    
+    void pop() {
+        store.pop_front();
+    }
+    
+    T &top() {
+        return store.at(1);
+    }
+    
+    bool empty() const {
+        return store.empty();
+    }
+};
+
+#endif //ARCHIVES_QUEUE_H
