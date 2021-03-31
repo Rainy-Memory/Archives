@@ -2,8 +2,8 @@
 // Created by Rainy Memory on 2021/3/12.
 //
 
-#ifndef ARCHIVES_SEGMENTTREE_H
-#define ARCHIVES_SEGMENTTREE_H
+#ifndef ARCHIVES_SEGMENTTREE_ADD_H
+#define ARCHIVES_SEGMENTTREE_ADD_H
 
 template<class T>
 class SegmentTree {
@@ -92,4 +92,4 @@ public:
     }
 };
 
-#endif //ARCHIVES_SEGMENTTREE_H
+#endif //ARCHIVES_SEGMENTTREE_ADD_H
